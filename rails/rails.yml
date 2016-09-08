@@ -1,0 +1,28 @@
+---
+- hosts: all
+  vars:
+    rbenv:
+      env: user
+      version: v1.0.0
+      ruby_version: 2.3.1
+    rbenv_users: ['vagrant']
+    virtual_hosts:
+      - server_name: demo.dev
+        root: /home/vagrant/src/demo
+        rails_env: development
+  roles:
+    #- aelogica.puma
+    - abtris.nginx-passenger
+    - zzet.rbenv
+    - nginx
+  tasks:
+    - name: Install gem dependencies
+      apt: name={{ item }} state=present
+      with_items:
+        - nodejs
+
+    - name: Install bundler
+      become: true
+      become_method: sudo
+      command: bash -lc "gem install bundler"
+

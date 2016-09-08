@@ -1,0 +1,24 @@
+---
+- hosts: all
+  tasks:
+    - name: Install homebrew dependencies
+      homebrew: name=dnsmasq
+
+    - name: Add *.dev resolver
+      become: true
+      become_method: sudo
+      lineinfile:
+        state: present
+        line: nameserver 127.0.0.1
+        create: yes
+        dest: /etc/resolver/dev
+        owner: root
+        group: wheel
+
+    - name: Resolve *.dev to localhost
+      lineinfile:
+        state: present
+        line: address=/.dev/127.0.0.1
+        create: yes
+        dest: /usr/local/etc/dnsmasq.conf
+
